@@ -32,7 +32,7 @@ RF24 radio(PIN_CE, PIN_CSN);
 // buffer for reading incoming messages
 const uint8_t maxBufferSize = 32;
 uint8_t myBuffer[maxBufferSize];
-uint8_t bufferSize = 24;
+uint8_t bufferSize = 16;
 
 // channel to listen to
 uint8_t channel = 4;
@@ -68,8 +68,8 @@ void setup(void) {
   radio.setAutoAck(false);
   radio.setRetries(0,0);
   radio.setDataRate(RF24_1MBPS);
-  radio.setPALevel(RF24_PA_MIN);
-  radio.setAddressWidth(5);       // CX-10 use 5 bytes addresses
+  radio.setPALevel(RF24_PA_MAX);
+  radio.setAddressWidth(3);         // CX-10 use 5 bytes addresses
 
   // Standby mode
   radio.startListening();
