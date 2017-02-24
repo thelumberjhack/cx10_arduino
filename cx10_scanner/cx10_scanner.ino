@@ -35,7 +35,7 @@ uint8_t myBuffer[maxBufferSize];
 uint8_t bufferSize = 16;
 
 // channel to listen to
-uint8_t channel = 4;
+uint8_t channel = 9;
 
 // there are two address modes: 0x55 and 0xAA
 boolean addressMode = true;
@@ -68,7 +68,7 @@ void setup(void) {
   radio.setAutoAck(false);
   radio.setRetries(0,0);
   radio.setDataRate(RF24_1MBPS);
-  radio.setPALevel(RF24_PA_MAX);
+  radio.setPALevel(RF24_PA_MIN);
   radio.setAddressWidth(3);         // CX-10 use 5 bytes addresses
 
   // Standby mode
