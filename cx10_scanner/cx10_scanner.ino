@@ -68,7 +68,7 @@ void setup(void) {
   radio.setAutoAck(false);
   radio.setRetries(0,0);
   radio.setDataRate(RF24_1MBPS);
-  radio.setPALevel(RF24_PA_MIN);
+  radio.setPALevel(RF24_PA_MAX);
   radio.setAddressWidth(3);         // CX-10 use 5 bytes addresses
 
   // Standby mode
