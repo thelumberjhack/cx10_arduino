@@ -1,7 +1,8 @@
 /************************************************************
 * CX-10 drone RC scanner
 * Author: Chi Zhang
-* Refered to Yannick's CX-10 Scanner and https://github.com/m-melchior/QC-360-A1/blob/master/src/Arduino/myRF24Scanner/myRF24Scanner.ino
+* Refered to Yannick's CX-10 Promiscuous receiver and
+* https://github.com/m-melchior/QC-360-A1/blob/master/src/Arduino/myRF24Scanner/myRF24Scanner.ino
 * PIN setup
 * CE   -> 7
 * CSN  -> 8
