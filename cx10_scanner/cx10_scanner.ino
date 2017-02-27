@@ -35,7 +35,7 @@ uint8_t myBuffer[maxBufferSize];
 uint8_t bufferSize = 16;
 
 // channel to listen to
-uint8_t channel = 9;
+uint8_t channel = 75;
 
 // there are two address modes: 0x55 and 0xAA
 boolean addressMode = true;
@@ -57,7 +57,7 @@ void initBuffer() {
 
 void setup(void) {
   // Use high speed serial
-  Serial.begin(115200);
+  Serial.begin(250000);
   printf_begin();                  // needed for printDetails() function
   Serial.println(F("nRF24l01+ CX-10 Scanner"));
 
@@ -67,8 +67,8 @@ void setup(void) {
   radio.disableCRC();
   radio.setAutoAck(false);
   radio.setRetries(0,0);
-  radio.setDataRate(RF24_1MBPS);
-  radio.setPALevel(RF24_PA_MAX);
+  radio.setDataRate(RF24_2MBPS);
+  radio.setPALevel(RF24_PA_MIN);
   radio.setAddressWidth(3);         // CX-10 use 5 bytes addresses
 
   // Standby mode
@@ -155,20 +155,6 @@ void changeChannel(int channel){
     isListening = true;
   }
 
-}
-
-void sweep(void) {
-  // Sweep on the first 90 2.4G channels
-  while (isScanning) {
-    for (int chan = 0; chan <= 90; chan++) {
-      changeChannel(chan);
-      delay(250);         // Wait for 250ms
-    }
-  }
-  for (int chan = 0; chan <= 90; chan++) {
-    changeChannel(chan);
-    delayMicroseconds(128000);         // Wait for 128ms
-  }
 }
 
 void loop(void) {
