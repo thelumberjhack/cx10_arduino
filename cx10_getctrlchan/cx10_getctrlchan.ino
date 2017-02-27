@@ -24,6 +24,10 @@ const uint8_t num_channels = 90;    // CX-10 do not use channels after 90.
 uint8_t flags[num_channels];
 const int numReps = 1;
 
+// some flags for the state
+boolean isRunning = false;
+boolean isListening = false;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(250000);
@@ -33,7 +37,7 @@ void setup() {
   // Setup and configure RF Radio
   radio.begin();
   radio.setAutoAck(false);
-  radio.setDataRate(RF24_1MBPS);
+  radio.setDataRate(RF24_2MBPS);
   radio.setPALevel(RF24_PA_MIN);
 
   // Standby mode
@@ -45,26 +49,56 @@ void setup() {
   Serial.println("Done with setup");
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void scan_channels(void){
   int rep_counter = numReps;
-  while  (rep_counter--){ //number of repetitions of each full scan
+
+  while  (rep_counter--){
+    //number of repetitions of each full scan
     int i = num_channels;
-    while (i--) { //scan over defined channels
+    while (i--) {
+      //scan over defined channels
       radio.setChannel(i);
       radio.startListening();
       delayMicroseconds(500);
 
-      if (radio.testRPD()) { // Test if signals over -60dB on current signal
+      if (radio.testRPD()) {
+        // Test if signals over -60dB on current signal
         flags[i]++;
       }
       radio.stopListening();
     }
   }
-  for (int k = 0; k < num_channels; k++) { //output channels and its time of apperance serial port
-    if(!(flags[k] == 0)){
-      Serial.println(String(k) + ": " + String(flags[k]));
+}
+
+void loop() {
+  if (isRunning){
+    scan_channels();
+  }
+
+  // Getting some user input
+  if (Serial.available()) {
+    // check the first char
+    char inChar = Serial.read();
+
+    if (inChar == 's') {
+      // 's' to start scanning the channels looking for data
+      isRunning = !isRunning;
+      Serial.println(isRunning?"Running...":"Not running.");
+    }
+
+    else if (inChar == 'p') {
+      // p toggle print results
+      if (!isRunning) {
+        for (int k = 0; k < num_channels; k++) {
+          //output channels and its number of apperance
+          if((flags[k] >= 20)){
+            Serial.println(String(k) + ": " + String(flags[k]));
+          }
+        }
+      }
+      else {
+        Serial.println("Please stop scanning before printing results.");
+      }
     }
   }
-  Serial.println("End of 1 Full Scan");
 }
