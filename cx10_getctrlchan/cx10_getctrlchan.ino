@@ -31,7 +31,7 @@ boolean isListening = false;
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(250000);
+  Serial.begin(115200);
   printf_begin();                  // needed for printDetails() function
   Serial.println(F("nRF24l01+ CX-10 Scanner"));
 
