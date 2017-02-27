@@ -152,23 +152,24 @@ void loop(void) {
     // if (radio.testRPD() && radio.available()) {
     // Tried to remove false positives with this testRPD() func.
     // ?TOFIX: after some packets received it stops receiving any other data.
-    if (radio.available()) {
-      // read the FIFO
-      radio.read(myBuffer, bufferSize);
+    if (radio.testRPD()){
+      if (radio.available()) {
+        // read the FIFO
+        radio.read(myBuffer, bufferSize);
 
-      // Print it
-      switch(printMode) {
-        case (PRINT_MODE_BYTES):
-          printBytes();
-          break;
-        case (PRINT_MODE_BITS):
-          printBits();
-          break;
+        // Print it
+        switch(printMode) {
+          case (PRINT_MODE_BYTES):
+            printBytes();
+            break;
+          case (PRINT_MODE_BITS):
+            printBits();
+            break;
+        }
       }
-
-      // Initialize buffer
-      initBuffer();
     }
+    // Initialize buffer
+    initBuffer();
   }
 
   else {
