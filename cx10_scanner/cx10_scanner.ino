@@ -59,7 +59,7 @@ void setup(void) {
   // Use high speed serial
   Serial.begin(250000);
   printf_begin();                  // needed for printDetails() function
-  Serial.println(F("nRF24l01+ CX-10 Scanner"));
+  Serial.println(F("nRF24l01+ CX-10 Promiscuous receiver"));
 
   // Setup and configure RF Radio
   radio.begin();
@@ -68,7 +68,7 @@ void setup(void) {
   radio.setAutoAck(false);
   radio.setRetries(0,0);
   radio.setDataRate(RF24_2MBPS);
-  radio.setPALevel(RF24_PA_MIN);
+  radio.setPALevel(RF24_PA_MAX);
   radio.setAddressWidth(3);         // CX-10 use 5 bytes addresses
 
   // Standby mode
@@ -139,24 +139,6 @@ void toggleAddress() {
   }
 }
 
-void changeChannel(int channel){
-  if (isListening) {
-    radio.stopListening();
-    isListening = false;
-  }
-
-  Serial.print("Switching to channel: ");
-  Serial.print(radio.getChannel());
-  Serial.println("");
-  radio.setChannel(channel);
-
-  if (!isListening) {
-    radio.startListening();
-    isListening = true;
-  }
-
-}
-
 void loop(void) {
   // Are we in running mode?
   if (isRunning) {
@@ -166,7 +148,10 @@ void loop(void) {
       isListening = true;
     }
 
-    // if anything available
+    // if anything available and >= -64dBm
+    // if (radio.testRPD() && radio.available()) {
+    // Tried to remove false positives with this testRPD() func.
+    // ?TOFIX: after some packets received it stops receiving any other data.
     if (radio.available()) {
       // read the FIFO
       radio.read(myBuffer, bufferSize);
@@ -231,12 +216,6 @@ void loop(void) {
       // s start / stop
       isRunning = !isRunning;
       Serial.println(isRunning?"Running...":"Not running.");
-    }
-
-    else if (inChar == 'c'){
-      // c toggle channel scanning
-      isScanning = !isScanning;
-      Serial.println(isScanning?"Scanning channels...":"Scanner stopped.");
     }
   }
 }
