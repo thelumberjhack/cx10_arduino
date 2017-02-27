@@ -63,7 +63,7 @@ void scan_channels(void){
       delayMicroseconds(500);
 
       if (radio.testRPD()) {
-        // Test if signals over -60dB on current signal
+        // Test if signals over -64dB on current signal
         flags[i]++;
       }
       radio.stopListening();
