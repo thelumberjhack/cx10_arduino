@@ -1,3 +1,6 @@
+/*
+* From https://github.com/AlexGhiti/CX10_arduino_receiver
+*/
 #include "XN297_nRF24L01.h"
 
 #define TXRX_OFF 0
@@ -25,7 +28,7 @@ static const uint16_t xn297_crc_xorout[] = {
         0x0000, 0x3448, 0x9BA7, 0x8BBB, 0x85E1, 0x3E8C, // 1st entry is missing, probably never needed
         0x451E, 0x18E6, 0x6B24, 0xE7AB, 0x3828, 0x8148, // it's used for 3-byte address w/ 0 byte payload only
         0xD461, 0xF494, 0x2503, 0x691D, 0xFE8B, 0x9BA7,
-        0x8B17, 0x2920, 0x8B5F, 0x61B1, 0xD391, 0x7401, 
+        0x8B17, 0x2920, 0x8B5F, 0x61B1, 0xD391, 0x7401,
         0x2138, 0x129F, 0xB3A0, 0x2988};
 
 #define RF_BIND_CHANNEL         0x02
@@ -108,7 +111,7 @@ void NRF24L01_Initialize()
 
 uint8_t XN297_ReadPayload(uint8_t* msg, int len)
 {
-    // TODO: if xn297_crc==1, check CRC before filling *msg 
+    // TODO: if xn297_crc==1, check CRC before filling *msg
     uint8_t res = radio.read_payload(msg, len);
     for(uint8_t i=0; i<len; i++)
       msg[i] = bit_reverse(msg[i])^bit_reverse(xn297_scramble[i+xn297_addr_len]);
@@ -208,7 +211,7 @@ uint8_t XN297_WritePayload(uint8_t* msg, int len)
             uint8_t b_out = bit_reverse(msg[i]);
             packet[last++] = b_out ^ xn297_scramble[xn297_addr_len+i];
         }
-        if (xn297_crc) { 
+        if (xn297_crc) {
             int offset = xn297_addr_len < 4 ? 1 : 0;
             uint16_t crc = initial;
             for (int i = offset; i < last; ++i) {
@@ -252,7 +255,7 @@ static void send_packet(uint8_t bind)
         packet[2] = txid[1];
         packet[3] = txid[2];
         packet[4] = txid[3];
-        // for CX-10A [5]-[8] is aircraft id received during bind 
+        // for CX-10A [5]-[8] is aircraft id received during bind
         //read_controls(&throttle, &rudder, &elevator, &aileron, &flags, &flags2);
         //packet[5+offset] = aileron & 0xff;
         //packet[6+offset] = (aileron >> 8) & 0xff;
@@ -261,7 +264,7 @@ static void send_packet(uint8_t bind)
         //packet[9+offset] = throttle & 0xff;
         //packet[10+offset] = (throttle >> 8) & 0xff;
         //packet[11+offset] = rudder & 0xff;
-        //packet[12+offset] = ((rudder >> 8) & 0xff) | ((flags & FLAG_FLIP) >> 8);  // 0x10 here is a flip flag 
+        //packet[12+offset] = ((rudder >> 8) & 0xff) | ((flags & FLAG_FLIP) >> 8);  // 0x10 here is a flip flag
         //packet[13+offset] = flags & 0xff;
         //packet[14+offset] = flags2 & 0xff;
 
@@ -310,7 +313,7 @@ uint8_t NRF24L01_SetBitrate(uint8_t bitrate)
         return radio.write_register(RF_SETUP, rf_setup);
 }
 
-void XN297_init() 
+void XN297_init()
 {
         txid[0] = 0;
         txid[1] = 0;
@@ -340,7 +343,7 @@ radio.begin();
         radio.write_register(RX_PW_P0, CX10A_PACKET_SIZE);
         radio.write_register(RF_CH, RF_BIND_CHANNEL);
         radio.write_register(RF_SETUP, 0x07);
-        NRF24L01_SetBitrate(0); //1M 
+        NRF24L01_SetBitrate(0); //1M
         NRF24L01_SetPower(3);
         // this sequence necessary for module from stock tx
         radio.read_register(FEATURE);
@@ -353,5 +356,3 @@ radio.begin();
         NRF24L01_SetTxRxMode(RX_EN);
         XN297_Configure(BV(EN_CRC) | BV(CRCO) | BV(PWR_UP) | BV(PRIM_RX));
 }
-
-

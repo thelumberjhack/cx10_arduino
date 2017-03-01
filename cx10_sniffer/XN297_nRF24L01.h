@@ -5,6 +5,9 @@
 #include "nRF24L01.h"
 #include "RF24.h"
 
+#define PIN_CE  7   // chip enable
+#define PIN_CSN 8   // chip select (for SPI)
+
 #define CX10A_PACKET_SIZE       19
 #define CX10A_PACKET_PERIOD     6000
 #define CX10WD_PACKET_SIZE      11
