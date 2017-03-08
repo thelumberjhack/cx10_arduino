@@ -394,6 +394,7 @@ void init(uint8_t drone) {
     radio.write_register(EN_RXADDR, 0x01);
     radio.write_register(RX_PW_P0, packet_size);
     radio.write_register(RF_CH, RF_BIND_CHANNEL);
+    // radio.write_register(RF_CH, 0x4b);
     radio.write_register(RF_SETUP, 0x07);
     NRF24L01_SetBitrate(0); //1M
     NRF24L01_SetPower(3);
