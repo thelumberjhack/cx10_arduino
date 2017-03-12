@@ -14,7 +14,7 @@ uint32_t txid = 0x00000000;
 void setup(void) {
 	Serial.begin(115200);
 	printf_begin();
-	Serial.println("CX-10 (A/WD) Sniffer/Decoder");
+	Serial.println("CX-10 WD Controller");
 
 	// Initialize receiver
 	init(CX10WD);
@@ -62,10 +62,10 @@ void start_receiver(void){
 
 void start_hijack(void) {
 	// printf("Sending control commands");
-	radio.stopListening();
+	// radio.printDetails();
 	int i = 0;
-	while(i < 2 ){
-	    send_packet(0);
+	while(i < 1500 ){
+	    send_packet(1);
 	    i++;
 	}
 	// printf("Done!");
@@ -73,6 +73,7 @@ void start_hijack(void) {
 
 
 void loop(void) {
-	// start_receiver();
-	start_hijack();
+	 start_receiver();
+	// start_hijack();
+	// delay(10000);
 }

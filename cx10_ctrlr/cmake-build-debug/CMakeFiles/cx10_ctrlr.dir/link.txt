@@ -1,0 +1,1 @@
+/usr/bin/c++   -g   CMakeFiles/cx10_ctrlr.dir/nrf24l01.c.o CMakeFiles/cx10_ctrlr.dir/XN297_nRF24L01.cpp.o  -o cx10_ctrlr 

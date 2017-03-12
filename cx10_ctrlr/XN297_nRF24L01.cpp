@@ -267,7 +267,7 @@ uint8_t NRF24L01_SetPower(uint8_t power)
         default:            nrf_power = 0; break;
     };
     // Power is in range 0..3 for nRF24L01
-    rf_setup = (rf_setup & 0xF9) | ((nrf_power & 0x03) << 1);
+    rf_setup = 0x3E; //(rf_setup & 0xF9) | ((nrf_power & 0x03) << 1);
     return radio.write_register(RF_SETUP, rf_setup);
 }
 
@@ -276,6 +276,10 @@ void send_packet(uint8_t bind)
 {
     uint16_t aileron, elevator, throttle, rudder;
     packet[0] = bind ? 0xAA : 0x55;
+
+    const uint64_t tx_address = 0x55D74A9864LL;
+    XN297_SetTXAddr(tx_address, 4);
+
     if (bind){
         memcpy(&packet[1], txid, 4);
         memset(&packet[5], 0, packet_size-5);
@@ -311,6 +315,7 @@ void send_packet(uint8_t bind)
     radio.flush_tx();
 
     XN297_WritePayload(packet, packet_size);
+    // radio.write_register(CONFIG, 0x8E);
 }
 
 uint8_t NRF24L01_SetBitrate(uint8_t bitrate)
@@ -325,49 +330,49 @@ uint8_t NRF24L01_SetBitrate(uint8_t bitrate)
         return radio.write_register(RF_SETUP, rf_setup);
 }
 
-void XN297_init()
-{
-        txid[0] = 0;
-        txid[1] = 0;
-        txid[2] = 0;
-        txid[3] = 0;
-        rf_chans[0] = 0x03;
-        rf_chans[1] = 0x16;
-        rf_chans[2] = 0x2D;
-        rf_chans[3] = 0x40;
-        packet_size = CX10A_PACKET_SIZE;
-        for (uint8_t i = 0; i < 4; i++)
-                packet[5 + i] = 0xFF; // clear aircraft id
-        packet[9] = 0;
-        radio.begin();
-
-        NRF24L01_Initialize();
-        NRF24L01_SetTxRxMode(TX_EN);
-        XN297_SetTXAddr(rx_address, 5);
-        XN297_SetRXAddr(rx_address, 5);
-
-        radio.flush_tx();
-        radio.flush_rx();
-
-        radio.write_register(STATUS, 0x70);
-        radio.write_register(EN_AA, 0x00);
-        radio.write_register(EN_RXADDR, 0x01);
-        radio.write_register(RX_PW_P0, CX10A_PACKET_SIZE);
-        radio.write_register(RF_CH, RF_BIND_CHANNEL);
-        radio.write_register(RF_SETUP, 0x07);
-        NRF24L01_SetBitrate(0); //1M
-        NRF24L01_SetPower(3);
-        // this sequence necessary for module from stock tx
-        radio.read_register(FEATURE);
-        radio.toggle_features();
-        radio.read_register(FEATURE);
-        radio.write_register(DYNPD, 0x00);       // Disable dynamic payload length on all pipes
-        radio.write_register(FEATURE, 0x00);     // Set feature bits on
-
-        NRF24L01_SetTxRxMode(TXRX_OFF);
-        NRF24L01_SetTxRxMode(RX_EN);
-        XN297_Configure(BV(EN_CRC) | BV(CRCO) | BV(PWR_UP) | BV(PRIM_RX));
-}
+//void XN297_init()
+//{
+//        txid[0] = 0;
+//        txid[1] = 0;
+//        txid[2] = 0;
+//        txid[3] = 0;
+//        rf_chans[0] = 0x03;
+//        rf_chans[1] = 0x16;
+//        rf_chans[2] = 0x2D;
+//        rf_chans[3] = 0x40;
+//        packet_size = CX10A_PACKET_SIZE;
+//        for (uint8_t i = 0; i < 4; i++)
+//                packet[5 + i] = 0xFF; // clear aircraft id
+//        packet[9] = 0;
+//        radio.begin();
+//
+//        NRF24L01_Initialize();
+//        NRF24L01_SetTxRxMode(TX_EN);
+//        XN297_SetTXAddr(rx_address, 5);
+//        XN297_SetRXAddr(rx_address, 5);
+//
+//        radio.flush_tx();
+//        radio.flush_rx();
+//
+//        radio.write_register(STATUS, 0x70);
+//        radio.write_register(EN_AA, 0x00);
+//        radio.write_register(EN_RXADDR, 0x01);
+//        radio.write_register(RX_PW_P0, CX10A_PACKET_SIZE);
+//        radio.write_register(RF_CH, RF_BIND_CHANNEL);
+//        radio.write_register(RF_SETUP, 0x07);
+//        NRF24L01_SetBitrate(0); //1M
+//        NRF24L01_SetPower(3);
+//        // this sequence necessary for module from stock tx
+//        radio.read_register(FEATURE);
+//        radio.toggle_features();
+//        radio.read_register(FEATURE);
+//        radio.write_register(DYNPD, 0x00);       // Disable dynamic payload length on all pipes
+//        radio.write_register(FEATURE, 0x00);     // Set feature bits on
+//
+//        NRF24L01_SetTxRxMode(TXRX_OFF);
+//        NRF24L01_SetTxRxMode(RX_EN);
+//        XN297_Configure(BV(EN_CRC) | BV(CRCO) | BV(PWR_UP) | BV(PRIM_RX));
+//}
 
 
 
@@ -406,8 +411,9 @@ void init(uint8_t drone) {
     radio.write_register(EN_RXADDR, 0x01);
     radio.write_register(RX_PW_P0, packet_size);
     radio.write_register(RF_CH, RF_BIND_CHANNEL);
-    // radio.write_register(RF_CH, 0x4b);
-    radio.write_register(RF_SETUP, 0x07);
+
+//    radio.write_register(RF_SETUP, 0x07);
+    radio.write_register(RF_SETUP, 0x3E);
     NRF24L01_SetBitrate(0); //1M
     NRF24L01_SetPower(6);
     // this sequence necessary for module from stock tx
@@ -418,6 +424,6 @@ void init(uint8_t drone) {
     radio.write_register(FEATURE, 0x00);     // Set feature bits on
 
     NRF24L01_SetTxRxMode(TXRX_OFF);
-    NRF24L01_SetTxRxMode(TX_EN);
+    NRF24L01_SetTxRxMode(RX_EN);
     XN297_Configure(BV(EN_CRC) | BV(CRCO) | BV(PWR_UP) | BV(PRIM_RX));
 }
