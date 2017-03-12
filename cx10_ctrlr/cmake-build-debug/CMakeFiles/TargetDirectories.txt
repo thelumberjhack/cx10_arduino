@@ -1,3 +1,0 @@
-/home/yannick/workspace/projects/istuary/toydrone/cx10_arduino/cx10_ctrlr/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/yannick/workspace/projects/istuary/toydrone/cx10_arduino/cx10_ctrlr/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/yannick/workspace/projects/istuary/toydrone/cx10_arduino/cx10_ctrlr/cmake-build-debug/CMakeFiles/cx10_ctrlr.dir
